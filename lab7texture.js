@@ -205,13 +205,13 @@ function createWindow(x) {
 [-8, 0, 8].forEach(createWindow);
 
 // Exterior scenery sits behind the back wall and is visible through the panes.
-const outdoorGround = new THREE.Mesh(
-	new THREE.PlaneGeometry(200, 200),
-	new THREE.MeshBasicMaterial({ color: 0x5d9b45 })
-);
-outdoorGround.rotation.x = -Math.PI / 2;
-outdoorGround.position.set(0, -0.1, -70);
-scene.add(outdoorGround);
+// const outdoorGround = new THREE.Mesh(
+// 	new THREE.PlaneGeometry(200, 200),
+// 	new THREE.MeshBasicMaterial({ color: 0x5d9b45 })
+// );
+// outdoorGround.rotation.x = -Math.PI / 2;
+// outdoorGround.position.set(0, -0.1, -70);
+// scene.add(outdoorGround);
 
 const outdoorTreeTrunk = new THREE.Mesh(
 	new THREE.CylinderGeometry(0.35, 0.5, 5, 12),
