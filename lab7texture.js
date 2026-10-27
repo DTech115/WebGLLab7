@@ -1,4 +1,5 @@
-import * as THREE from "https://unpkg.com/three@0.160.0/build/three.module.js";
+import * as THREE from "three";
+import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
 const loader = new THREE.TextureLoader();
 //
 // SCENE
@@ -35,6 +36,20 @@ renderer.shadowMap.enabled = true;
 document.body.appendChild(renderer.domElement);
 
 //
+// HDR ENVIRONMENT
+//
+
+new RGBELoader().load(
+	'textures/hdr/snowy_forest_path_02_4k.hdr', 
+
+	texture => {
+		texture.mapping = THREE.EquirectangularReflectionMapping;
+		scene.environment = texture;
+		scene.background = texture;
+});
+
+
+//
 // LIGHTING
 //
 
@@ -66,11 +81,31 @@ scene.add(fireplaceLight);
 // FLOOR
 //
 
+const floorTextures = [
+	loader.load('textures/wood/old_wooden_floor_02_diff_1k.png'),
+	loader.load('textures/wood/old_wooden_floor_02_nor_gl_1k.png'),
+	loader.load('textures/wood/old_wooden_floor_02_rough_1k.png'),
+	loader.load('textures/wood/old_wooden_floor_02_ao_1k.png'),
+	loader.load('textures/wood/old_wooden_floor_02_disp_1k.png')
+];
+
+// rotate 90 degrees
+floorTextures.forEach((texture) => {
+	texture.center.set(0.5, 0.5);
+	texture.rotation = Math.PI / 2;
+});
+
+const floorMaterial = 
+	new THREE.MeshStandardMaterial({
+
+		map: floorTextures[0],
+		normalMap: floorTextures[1],
+		roughnessMap: floorTextures[2]
+	});
+
 const floor = new THREE.Mesh(
 	new THREE.PlaneGeometry(24, 24),
-	new THREE.MeshStandardMaterial({
-		color: 0x8b5a2b
-	})
+	floorMaterial
 );
 
 floor.rotation.x = -Math.PI / 2;
@@ -129,7 +164,8 @@ createWall(12, 4, 0, 0.5, 8, 24);
 //
 
 const windowFrameMaterial = new THREE.MeshStandardMaterial({
-	color: 0x4a3527
+	map: loader.load('textures/window/asphalt_snow_diff_1k.png'),
+	normalMap: loader.load('textures/window/asphalt_snow_nor_gl_1k.png')
 });
 
 const windowGlassMaterial = new THREE.MeshPhysicalMaterial({
@@ -195,11 +231,16 @@ scene.add(outdoorTreeLeaves);
 // TV STAND
 //
 
+const tvStandMaterial = new THREE.MeshStandardMaterial({
+	map: loader.load('textures/wood/lacquered_cherry_wood_diff_1k.png'),
+	normalMap: loader.load('textures/wood/lacquered_cherry_wood_nor_gl_1k.png'),
+	roughnessMap: loader.load('textures/wood/lacquered_cherry_wood_rough_1k.png'),
+	aoMap: loader.load('textures/wood/lacquered_cherry_wood_ao_1k.png')
+});
+
 const tvStand = new THREE.Mesh(
 	new THREE.BoxGeometry(5, 1, 1.5),
-	new THREE.MeshStandardMaterial({
-		color: 0x3a2a20
-	})
+	tvStandMaterial
 );
 
 tvStand.position.set(0, 0.8, -10.5);
@@ -280,11 +321,19 @@ scene.add(magazine);
 // FIREPLACE
 //
 
+const fireplaceMaterial = new THREE.MeshStandardMaterial({
+	map: loader.load('textures/brick/brick_wall_08_diff_1k.png'),
+	normalMap: loader.load('textures/brick/brick_wall_08_nor_gl_1k.png'),
+	roughnessMap: loader.load('textures/brick/brick_wall_08_rough_1k.png'),
+	aoMap: loader.load('textures/brick/brick_wall_08_ao_1k.png')
+	// displacementMap: loader.load('textures/brick/brick_wall_08_disp_1k.png'),
+	// displacementScale: 0.02
+
+});
+
 const fireplace = new THREE.Mesh(
 	new THREE.BoxGeometry(4, 3, 1),
-	new THREE.MeshStandardMaterial({
-		color: 0x555555
-	})
+	fireplaceMaterial
 );
 
 fireplace.position.set(-7, 1.5, -10.5);
@@ -308,11 +357,20 @@ scene.add(fire);
 // DOOR
 //
 
+const doorMaterial = new THREE.MeshStandardMaterial({
+	map: loader.load('textures/door/dark_paneled_wood_diff_1k.png'),
+	normalMap: loader.load('textures/door/dark_paneled_wood_nor_gl_1k.png'),
+	roughnessMap: loader.load('textures/door/dark_paneled_wood_rough_1k.png'),
+	aoMap: loader.load('textures/door/dark_paneled_wood_ao_1k.png')
+	// displacementMap: loader.load('textures/door/dark_paneled_wood_disp_1k.png'),
+	// displacementScale: 0.01
+});
+
+
+
 const door = new THREE.Mesh(
 	new THREE.BoxGeometry(2, 4, 0.15),
-	new THREE.MeshStandardMaterial({
-		color: 0x5b3a29
-	})
+	doorMaterial
 );
 
 door.position.set(-11.7, 2, 6);
@@ -486,3 +544,11 @@ window.addEventListener("resize", () => {
 		window.innerHeight
 	);
 });
+
+// ==== AT LEAST these two for textures ====
+// 		const colorMap = ...
+// 		const normalMap = ...
+// ==== only if you have need rough material =====
+// 		const roughnessMap = ...
+// ==== optional ====
+//		const aoMap = ...
